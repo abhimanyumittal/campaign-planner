@@ -18,11 +18,15 @@ export function scorePublisher(brief: Brief, pub: Publisher, selected: PersonaMa
   }
 
   // Audience-first bridge: publishers where the chosen personas already shop.
+  // A link through a broad category only, or from a weak-match persona, counts for less.
   const bridging = selected.filter((m) => overlap(m.persona.profile.categories, profile.categories).length > 0);
   const viaPersonas = bridging.map((m) => m.persona.name);
   if (bridging.length) {
-    const pts = Math.min(30, bridging.reduce((s, m) => s + (m.stretch ? 5 : 15), 0));
-    push(`Shopped by ${viaPersonas.join(", ")}`, pts);
+    const linkPoints = (m: PersonaMatch) => {
+      const shared = overlap(m.persona.profile.categories, profile.categories);
+      return m.stretch || shared.every((c) => BROAD_CATEGORIES.includes(c)) ? 5 : 15;
+    };
+    push(`Shopped by ${viaPersonas.join(", ")}`, Math.min(30, bridging.reduce((s, m) => s + linkPoints(m), 0)));
   }
 
   const vals = overlap(brief.values, profile.values);

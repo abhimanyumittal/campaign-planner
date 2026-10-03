@@ -9,6 +9,7 @@ function checkRanking(ids: string[], exp: Expectation, f: string[]) {
   }
   for (const id of exp.excludes ?? []) if (ids.includes(id)) f.push(`${id} should not be recommended`);
   if (exp.maxIncluded != null && ids.length > exp.maxIncluded) f.push(`${ids.length} publishers recommended, max ${exp.maxIncluded}`);
+  if (exp.minIncluded != null && ids.length < exp.minIncluded) f.push(`${ids.length} publishers recommended, min ${exp.minIncluded}`);
 }
 
 export function checkPlan(plan: PlanResult, exp: Expectation): string[] {

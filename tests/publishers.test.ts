@@ -51,6 +51,12 @@ describe("scorePublishers", () => {
     expect(ids).not.toContain("pub_004");
   });
 
+  test("candles → apparel and beauty stores don't qualify through broad-category links alone", () => {
+    const ids = includedIds({ ...CANDLES, values: ["sustainability", "premium_quality", "giftable", "heritage_craft"], priceTier: "premium" });
+    expect(ids).not.toContain("pub_002");
+    expect(ids).not.toContain("pub_013");
+  });
+
   test("decideInclusion caps the list", () => {
     const res = run(DOG_FOOD).map((m) => ({ ...m, finalScore: 90, directCategory: true }));
     expect(decideInclusion(DOG_FOOD, res).filter((m) => m.included)).toHaveLength(MAX_INCLUDED);
