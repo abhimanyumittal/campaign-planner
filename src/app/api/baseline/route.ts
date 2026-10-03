@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { describeError } from "@/lib/apiError";
 import { runBaseline } from "@/lib/baseline";
 import { DEFAULT_BUDGET_USD } from "@/lib/config";
 
@@ -14,6 +15,6 @@ export async function POST(req: Request) {
     return NextResponse.json(await runBaseline(parsed.data.description, parsed.data.budgetUsd ?? DEFAULT_BUDGET_USD));
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: err instanceof Error ? err.message : "Baseline failed" }, { status: 500 });
+    return NextResponse.json({ error: describeError(err) }, { status: 500 });
   }
 }
