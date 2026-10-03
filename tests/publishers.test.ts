@@ -25,6 +25,9 @@ describe("scorePublishers", () => {
     const linden = res.find((m) => m.publisher.id === "pub_005")!;
     expect(linden.exclusionReason).toMatch(/price/i);
     expect(computeFlags(HANDBAG, res).map((f) => f.code)).toContain("price_above_catalog");
+    // closest options first: the affluent-women apparel stores, not the convenience app
+    expect(["pub_004", "pub_005", "pub_014", "pub_011"]).toContain(res[0].publisher.id);
+    expect(computeFlags(HANDBAG, res).find((f) => f.code === "few_matches")!.message).toMatch(/^No publisher cleared/);
   });
 
   test("no_fit → nothing included, explained", () => {

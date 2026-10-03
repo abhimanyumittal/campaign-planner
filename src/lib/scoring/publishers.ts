@@ -85,7 +85,10 @@ export function scorePublishers(brief: Brief, personas: PersonaMatch[]): Publish
 
 /** Sorts by finalScore and sets included/exclusionReason. Returns new objects. */
 export function decideInclusion(brief: Brief, matches: PublisherMatch[]): PublisherMatch[] {
-  const sorted = matches.map((m) => ({ ...m })).sort((a, b) => b.finalScore - a.finalScore);
+  // Ties (often everything at 0 for a poor-fit advertiser) go to the publisher with more positive evidence,
+  // so "Not recommended" lists the closest options first.
+  const evidence = (m: PublisherMatch) => m.reasons.reduce((s, r) => s + Math.max(0, r.points), 0) + Math.max(0, m.adjustment);
+  const sorted = matches.map((m) => ({ ...m })).sort((a, b) => b.finalScore - a.finalScore || evidence(b) - evidence(a));
   let count = 0;
   for (const m of sorted) {
     const eligible =

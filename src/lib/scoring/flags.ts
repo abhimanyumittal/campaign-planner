@@ -25,7 +25,8 @@ export function computeFlags(brief: Brief, publishers: PublisherMatch[]): Flag[]
   }
   const included = publishers.filter((p) => p.included).length;
   if (brief.status !== "no_fit" && included < 2) {
-    flags.push({ code: "few_matches", message: `Only ${included} publisher(s) cleared the bar. See "Not recommended" for the closest options.` });
+    const lead = included === 0 ? "No publisher cleared the bar." : "Only 1 publisher cleared the bar.";
+    flags.push({ code: "few_matches", message: `${lead} See "Not recommended" for the closest options.` });
   }
   return flags;
 }
