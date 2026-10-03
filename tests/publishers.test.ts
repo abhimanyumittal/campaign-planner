@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { scorePersonas } from "@/lib/scoring/personas";
 import { decideInclusion, MAX_INCLUDED, scorePublishers } from "@/lib/scoring/publishers";
 import { computeFlags } from "@/lib/scoring/flags";
-import { CANDLES, CLEANING, DENTAL, DOG_FOOD, HANDBAG } from "./fixtures";
+import { ACTIVEWEAR, CANDLES, CLEANING, DENTAL, DOG_FOOD, HANDBAG } from "./fixtures";
 import type { Brief } from "@/lib/types";
 
 const run = (b: Brief) => scorePublishers(b, scorePersonas(b));
@@ -42,6 +42,13 @@ describe("scorePublishers", () => {
 
   test("refillable cleaning → Pantrygood included", () => {
     expect(includedIds(CLEANING)).toContain("pub_008");
+  });
+
+  test("activewear → a broad 'womens apparel' match alone doesn't qualify classic-apparel stores", () => {
+    const ids = includedIds(ACTIVEWEAR);
+    expect(ids[0]).toBe("pub_002");
+    expect(ids).not.toContain("pub_005");
+    expect(ids).not.toContain("pub_004");
   });
 
   test("decideInclusion caps the list", () => {

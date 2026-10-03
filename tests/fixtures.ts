@@ -27,3 +27,7 @@ export const CLEANING = makeBrief({
   categories: ["household_cleaning"], values: ["sustainability"],
   priceTier: "mid", estPriceUsd: 30, purchaseModel: "subscription",
 });
+export const ACTIVEWEAR = makeBrief({
+  categories: ["activewear", "womens_apparel"], values: ["sustainability"],
+  priceTier: "premium", estPriceUsd: 90, targetGender: "female", purchaseModel: "one_time",
+});

@@ -15,6 +15,10 @@ export const CATEGORIES = [
 ] as const;
 export type Category = (typeof CATEGORIES)[number];
 
+// Umbrella categories that many publishers carry. Matching only on one of these is weak evidence
+// ("sells women's clothing" says little about fit for sustainable activewear), so it scores lower.
+export const BROAD_CATEGORIES: readonly Category[] = ["womens_apparel"];
+
 export const VALUES = [
   "sustainability", "science_backed", "premium_quality", "value_price", "convenience",
   "giftable", "playful_aesthetic", "heritage_craft", "performance", "inclusive",

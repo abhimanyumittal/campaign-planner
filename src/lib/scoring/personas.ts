@@ -1,4 +1,5 @@
 import { PERSONAS, type Persona } from "../catalog";
+import { BROAD_CATEGORIES } from "../taxonomy";
 import type { Brief, PersonaMatch, Reason } from "../types";
 import { clamp, humanList, overlap, parseAgeRange, rangesOverlap } from "../util";
 
@@ -21,7 +22,12 @@ export function scorePersona(brief: Brief, persona: Persona): { score: number; r
   const { profile } = persona;
 
   const cats = overlap(brief.categories, profile.categories);
-  if (cats.length) reasons.push({ label: `Shops ${humanList(cats)}`, points: Math.min(55, 40 + 10 * (cats.length - 1)) });
+  if (cats.length) {
+    const broadOnly = cats.every((c) => BROAD_CATEGORIES.includes(c));
+    reasons.push(broadOnly
+      ? { label: `Shops ${humanList(cats)} (broad match)`, points: 25 }
+      : { label: `Shops ${humanList(cats)}`, points: Math.min(55, 40 + 10 * (cats.length - 1)) });
+  }
 
   const vals = overlap(brief.values, profile.values);
   if (vals.length) reasons.push({ label: `Cares about ${humanList(vals)}`, points: Math.min(25, 10 * vals.length) });

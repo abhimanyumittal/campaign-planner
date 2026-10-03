@@ -12,6 +12,12 @@ import BaselineSection from "./BaselineSection";
 
 type Precomputed = { plan: PlanResult; baseline: BaselineResult | null };
 
+// On narrow screens the results sit below the sample list, so bring them into view.
+function revealResults() {
+  if (window.innerWidth >= 1024) return;
+  requestAnimationFrame(() => document.getElementById("results")?.scrollIntoView({ behavior: "smooth" }));
+}
+
 async function postJson<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
   const data = await res.json();
@@ -36,6 +42,7 @@ export default function Planner({ examples }: { examples: Example[] }) {
     setError(null);
     setBaseline(null);
     setCachedBaseline(null);
+    revealResults();
     try {
       setPlan(await postJson<PlanResult>("/api/plan", { description: text, budgetUsd }));
     } catch (e) {
@@ -56,6 +63,7 @@ export default function Planner({ examples }: { examples: Example[] }) {
       const data = (await res.json()) as Precomputed;
       setPlan(data.plan);
       setCachedBaseline(data.baseline);
+      revealResults();
     } else {
       await runLive(ex.text);
     }
@@ -150,7 +158,7 @@ export default function Planner({ examples }: { examples: Example[] }) {
         </section>
       </aside>
 
-      <main className="min-w-0 space-y-10 pb-16">
+      <main id="results" className="min-w-0 scroll-mt-4 space-y-10 pb-16">
         {loading === "plan" && (
           <p className="rounded-md border border-rule bg-paper p-4 text-sm text-muted">
             Reading the brief, scoring 10 personas and 20 publishers, then reviewing the ranking and writing ads. Takes about 15 seconds.

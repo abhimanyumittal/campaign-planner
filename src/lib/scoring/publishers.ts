@@ -1,4 +1,5 @@
 import { PUBLISHERS, type Publisher } from "../catalog";
+import { BROAD_CATEGORIES } from "../taxonomy";
 import type { Brief, PersonaMatch, PublisherMatch, Reason } from "../types";
 import { clamp, humanList, overlap, parseAgeRange, rangesOverlap } from "../util";
 
@@ -11,7 +12,10 @@ export function scorePublisher(brief: Brief, pub: Publisher, selected: PersonaMa
   const { profile } = pub;
 
   const cats = overlap(brief.categories, profile.categories);
-  if (cats.length) push(`Sells ${humanList(cats)}`, Math.min(45, 35 + 10 * (cats.length - 1)));
+  if (cats.length) {
+    if (cats.every((c) => BROAD_CATEGORIES.includes(c))) push(`Sells ${humanList(cats)} (broad match)`, 15);
+    else push(`Sells ${humanList(cats)}`, Math.min(45, 35 + 10 * (cats.length - 1)));
+  }
 
   // Audience-first bridge: publishers where the chosen personas already shop.
   const bridging = selected.filter((m) => overlap(m.persona.profile.categories, profile.categories).length > 0);
