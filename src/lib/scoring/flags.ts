@@ -1,5 +1,6 @@
 import { PUBLISHERS } from "../catalog";
 import type { Brief, Flag, PublisherMatch } from "../types";
+import { humanList } from "../util";
 
 const MAX_AOV = Math.max(...PUBLISHERS.map((p) => p.avg_order_value_usd));
 const CARRIED = new Set<string>(PUBLISHERS.flatMap((p) => p.profile.categories));
@@ -20,7 +21,7 @@ export function computeFlags(brief: Brief, publishers: PublisherMatch[]): Flag[]
   }
   const uncovered = brief.categories.filter((c) => !CARRIED.has(c));
   if (brief.categories.length && uncovered.length === brief.categories.length) {
-    flags.push({ code: "no_category_coverage", message: `No publisher in the catalog sells ${uncovered.join(", ")}.` });
+    flags.push({ code: "no_category_coverage", message: `No publisher in the catalog sells ${humanList(uncovered)}.` });
   }
   const included = publishers.filter((p) => p.included).length;
   if (brief.status !== "no_fit" && included < 2) {

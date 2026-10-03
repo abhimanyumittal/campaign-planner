@@ -1,6 +1,6 @@
 import { PERSONAS, type Persona } from "../catalog";
 import type { Brief, PersonaMatch, Reason } from "../types";
-import { clamp, overlap, parseAgeRange, rangesOverlap } from "../util";
+import { clamp, humanList, overlap, parseAgeRange, rangesOverlap } from "../util";
 
 export const PERSONA_SELECT_THRESHOLD = 40;
 export const PERSONA_STRETCH_THRESHOLD = 20;
@@ -21,10 +21,10 @@ export function scorePersona(brief: Brief, persona: Persona): { score: number; r
   const { profile } = persona;
 
   const cats = overlap(brief.categories, profile.categories);
-  if (cats.length) reasons.push({ label: `Shops ${cats.join(", ")}`, points: Math.min(55, 40 + 10 * (cats.length - 1)) });
+  if (cats.length) reasons.push({ label: `Shops ${humanList(cats)}`, points: Math.min(55, 40 + 10 * (cats.length - 1)) });
 
   const vals = overlap(brief.values, profile.values);
-  if (vals.length) reasons.push({ label: `Cares about ${vals.join(", ")}`, points: Math.min(25, 10 * vals.length) });
+  if (vals.length) reasons.push({ label: `Cares about ${humanList(vals)}`, points: Math.min(25, 10 * vals.length) });
 
   const price = PRICE_FIT[brief.priceTier][persona.price_sensitivity] ?? 0;
   if (price !== 0) {
@@ -41,7 +41,7 @@ export function scorePersona(brief: Brief, persona: Persona): { score: number; r
   }
 
   const anti = overlap(brief.values, profile.antiValues);
-  if (anti.length) reasons.push({ label: `Turned off by ${anti.join(", ")}`, points: -25 * anti.length });
+  if (anti.length) reasons.push({ label: `Turned off by ${humanList(anti)}`, points: -25 * anti.length });
 
   if (profile.avoidsSubscription && brief.purchaseModel === "subscription") {
     reasons.push({ label: "Avoids subscription-only offers", points: -20 });

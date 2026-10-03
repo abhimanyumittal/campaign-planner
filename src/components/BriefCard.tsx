@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { PlanResult } from "@/lib/types";
+import { human, humanList } from "@/lib/util";
 
 const STATUS: Record<PlanResult["brief"]["status"], { label: string; cls: string }> = {
   clear: { label: "Clear brief", cls: "bg-pos-soft text-pos" },
@@ -24,10 +25,10 @@ export default function BriefCard({ plan, onAnswer, busy }: { plan: PlanResult; 
       <p className="text-sm text-muted">{brief.statusReason}</p>
 
       <dl className="grid grid-cols-2 gap-4 border-t border-rule pt-4 text-sm sm:grid-cols-4">
-        <Field label="Categories" value={brief.categories.join(", ")} />
-        <Field label="Values" value={brief.values.join(", ")} />
+        <Field label="Categories" value={humanList(brief.categories)} />
+        <Field label="Values" value={humanList(brief.values)} />
         <Field label="Price" value={`${brief.priceTier}${brief.estPriceUsd != null ? ` · ~$${brief.estPriceUsd}` : ""}`} />
-        <Field label="Buying model" value={brief.purchaseModel.replace("_", "-")} />
+        <Field label="Buying model" value={human(brief.purchaseModel)} />
       </dl>
 
       {flags.length > 0 && (
@@ -77,7 +78,7 @@ function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-xs uppercase tracking-wider text-muted">{label}</dt>
-      <dd className="mt-0.5">{value || "–"}</dd>
+      <dd className="mt-0.5 break-words">{value || "–"}</dd>
     </div>
   );
 }

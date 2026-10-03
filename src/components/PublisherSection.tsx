@@ -2,6 +2,7 @@ import { INCLUDE_THRESHOLD } from "@/lib/scoring/publishers";
 import type { PlanResult } from "@/lib/types";
 import ReasonChips from "./ReasonChips";
 import ScoreLedger from "./ScoreLedger";
+import { human } from "@/lib/util";
 
 export default function PublisherSection({ plan }: { plan: PlanResult }) {
   const included = plan.publishers.filter((m) => m.included);
@@ -26,7 +27,7 @@ export default function PublisherSection({ plan }: { plan: PlanResult }) {
               <h3 className="font-display text-lg font-semibold">
                 <span className="mr-2 font-mono text-sm text-muted">#{i + 1}</span>
                 {m.publisher.name}
-                <span className="ml-2 text-sm font-normal text-muted">{m.publisher.category.replace("_", " ")} · AOV ${m.publisher.avg_order_value_usd}</span>
+                <span className="ml-2 text-sm font-normal text-muted">{human(m.publisher.category)} · AOV ${m.publisher.avg_order_value_usd}</span>
               </h3>
               <p className="font-mono text-sm">
                 {m.finalScore}<span className="text-muted">/100</span>

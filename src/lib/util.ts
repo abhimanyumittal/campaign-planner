@@ -8,3 +8,7 @@ export function parseAgeRange(s: string): [number, number] | null {
 }
 
 export const rangesOverlap = (a: [number, number], b: [number, number]) => a[0] <= b[1] && b[0] <= a[1];
+
+/** "home_decor_candles" → "home decor candles" */
+export const human = (tag: string) => tag.replaceAll("_", " ");
+export const humanList = (tags: readonly string[]) => tags.map(human).join(", ");

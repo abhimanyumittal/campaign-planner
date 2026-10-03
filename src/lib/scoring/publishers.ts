@@ -1,6 +1,6 @@
 import { PUBLISHERS, type Publisher } from "../catalog";
 import type { Brief, PersonaMatch, PublisherMatch, Reason } from "../types";
-import { clamp, overlap, parseAgeRange, rangesOverlap } from "../util";
+import { clamp, humanList, overlap, parseAgeRange, rangesOverlap } from "../util";
 
 export const INCLUDE_THRESHOLD = 40;
 export const MAX_INCLUDED = 6;
@@ -11,18 +11,18 @@ export function scorePublisher(brief: Brief, pub: Publisher, selected: PersonaMa
   const { profile } = pub;
 
   const cats = overlap(brief.categories, profile.categories);
-  if (cats.length) push(`Sells ${cats.join(", ")}`, Math.min(45, 35 + 10 * (cats.length - 1)));
+  if (cats.length) push(`Sells ${humanList(cats)}`, Math.min(45, 35 + 10 * (cats.length - 1)));
 
   // Audience-first bridge: publishers where the chosen personas already shop.
   const bridging = selected.filter((m) => overlap(m.persona.profile.categories, profile.categories).length > 0);
   const viaPersonas = bridging.map((m) => m.persona.name);
   if (bridging.length) {
     const pts = Math.min(30, bridging.reduce((s, m) => s + (m.stretch ? 5 : 15), 0));
-    push(`Where your ${viaPersonas.join(", ")} shoppers buy`, pts);
+    push(`Shopped by ${viaPersonas.join(", ")}`, pts);
   }
 
   const vals = overlap(brief.values, profile.values);
-  if (vals.length) push(`Audience responds to ${vals.join(", ")}`, Math.min(15, 5 * vals.length));
+  if (vals.length) push(`Audience responds to ${humanList(vals)}`, Math.min(15, 5 * vals.length));
 
   if (brief.purchaseModel === "subscription" && profile.subscription) push("Subscription-friendly audience", 5);
 

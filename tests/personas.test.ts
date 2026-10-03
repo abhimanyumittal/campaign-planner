@@ -9,7 +9,7 @@ describe("scorePersonas", () => {
     const selected = res.filter((m) => m.selected);
     expect(selected.length).toBeGreaterThanOrEqual(3);
     expect(selected.length).toBeLessThanOrEqual(5);
-    expect(res[0].reasons.some((r) => r.label.includes("pet_food"))).toBe(true);
+    expect(res[0].reasons.some((r) => r.label.includes("pet food"))).toBe(true);
   });
 
   test("Gifter is penalised for subscription products", () => {
