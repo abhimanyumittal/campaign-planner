@@ -25,7 +25,7 @@ export function scorePersona(brief: Brief, persona: Persona): { score: number; r
   if (cats.length) {
     const broadOnly = cats.every((c) => BROAD_CATEGORIES.includes(c));
     reasons.push(broadOnly
-      ? { label: `Shops ${humanList(cats)} (broad match)`, points: 25 }
+      ? { label: `Shops ${humanList(cats)} (broad match)`, points: 15 }
       : { label: `Shops ${humanList(cats)}`, points: Math.min(55, 40 + 10 * (cats.length - 1)) });
   }
 

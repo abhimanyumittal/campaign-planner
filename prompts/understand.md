@@ -12,6 +12,7 @@ Fill every field:
 - productSummary: one plain sentence: what is sold, to whom, at what price level.
 - categories: 1–3 values from this list, most specific first: {{categories}}
   Pick broad ones (like womens_apparel) only when nothing more specific fits. If the honest answer is outdoor_gear, luxury_accessories or b2b_software, use it even though few publishers carry it. Do not force a closer-sounding category.
+  If the text gives no hint at all about what is sold (e.g. "idk just try it"), return an empty list rather than an arbitrary guess. An empty list is better than a wrong one: the clarifying questions will fill the gap.
 - values: 0–4 values from this list, only if stated or clearly implied: {{values}}
 - priceTier: budget | mid | premium | luxury | unknown.
 - estPriceUsd: typical single order in USD if stated or reasonably inferable; otherwise null.

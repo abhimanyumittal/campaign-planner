@@ -13,7 +13,7 @@ export function scorePublisher(brief: Brief, pub: Publisher, selected: PersonaMa
 
   const cats = overlap(brief.categories, profile.categories);
   if (cats.length) {
-    if (cats.every((c) => BROAD_CATEGORIES.includes(c))) push(`Sells ${humanList(cats)} (broad match)`, 15);
+    if (cats.every((c) => BROAD_CATEGORIES.includes(c))) push(`Sells ${humanList(cats)} (broad match)`, 10);
     else push(`Sells ${humanList(cats)}`, Math.min(45, 35 + 10 * (cats.length - 1)));
   }
 
