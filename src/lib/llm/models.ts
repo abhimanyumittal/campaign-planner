@@ -7,7 +7,7 @@ import { anthropic } from "@ai-sdk/anthropic";
 const registry = createProviderRegistry({ google, openai, anthropic });
 
 export type ModelRole = "default" | "creative";
-const DEFAULT_MODEL = "google:gemini-3.5-flash";
+const DEFAULT_MODEL = "google:gemini-3.8-flash";
 
 export function modelId(role: ModelRole): string {
   const base = process.env.LLM_MODEL || DEFAULT_MODEL;

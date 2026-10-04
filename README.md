@@ -8,7 +8,7 @@ cp .env.example .env.local   # add GOOGLE_GENERATIVE_AI_API_KEY (free at aistudi
 npm run dev                  # http://localhost:3000
 ```
 
-The 15 sample advertisers are pre-computed and work **without a key**. `npm test` runs 39 offline unit tests. `npm run eval` re-runs the samples through the planner and a single-prompt baseline and writes `evals/RESULTS.md`. Switch providers with `LLM_MODEL=openai:<model>` or `anthropic:<model>`.
+The default model is `gemini-3.8-flash` (about 12s per plan). The 15 sample advertisers are pre-computed and work **without a key**. `npm test` runs 39 offline unit tests. `npm run eval` re-runs the samples through the planner and a single-prompt baseline and writes `evals/RESULTS.md`. Switch providers with `LLM_MODEL=openai:<model>` or `anthropic:<model>`.
 
 ## How it works
 
@@ -38,9 +38,9 @@ Same model, all 15 samples: the planner vs. a **single prompt** that gets the wh
 
 | | Planner | Single prompt |
 |---|---|---|
-| #7 dental SaaS | "Outside this catalog", no ads | No publishers, yet 3 ads, one claiming "Save 10+ Hours Every Single Week" |
+| #7 dental SaaS | "Outside this catalog", no ads | No publishers, yet writes 3 ads anyway |
 | #10 $1,200 handbags | Nothing qualifies; flags price 9× the typical order | Recommends 3 apparel stores, no warning |
-| #15 "idk just try it" | No guess; asks 2 questions | Picks 3 publishers from nothing |
+| #15 "idk just try it" | No guess; asks 2 questions | No publishers, yet writes 3 generic ads ("Curious? Give It a Try") |
 
 The evals caught real bugs in my version: a broad "women's apparel" tag let classic-apparel stores into activewear results, and a prompt fix over-corrected vague input. Both are fixed and covered by tests. Known gap: single-category products (#3) get thin lists.
 
