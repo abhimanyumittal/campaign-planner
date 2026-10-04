@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 import { runPipeline } from "@/lib/pipeline";
 import type { CreativeInput, LlmSteps } from "@/lib/llm/steps";
-import { DENTAL, DOG_FOOD } from "./fixtures";
+import { DENTAL, DOG_FOOD, NA_DRINK } from "./fixtures";
 
 function stubLlm(brief = DOG_FOOD): LlmSteps {
   return {
@@ -24,6 +24,11 @@ describe("runPipeline", () => {
     expect(res.config?.allocations.length).toBeGreaterThan(0);
     expect(res.input.budgetUsd).toBe(10_000);
     expect(llm.review).toHaveBeenCalledOnce();
+  });
+
+  test("always asks for at least 3 ads when there is something to advertise", async () => {
+    const res = await runPipeline({ description: "na drink" }, stubLlm(NA_DRINK));
+    expect(res.creatives).toHaveLength(3);
   });
 
   test("no_fit → skips review and creative, no config", async () => {

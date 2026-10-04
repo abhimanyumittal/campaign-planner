@@ -27,7 +27,8 @@ export type PersonaMatch = {
   score: number;
   reasons: Reason[];
   selected: boolean;
-  stretch: boolean; // selected only to reach the 3-persona minimum
+  stretch: boolean; // weak but real match (score 20–39)
+  fillReason: string | null; // set when added only so there are at least 3 ads
 };
 
 export type PublisherMatch = {

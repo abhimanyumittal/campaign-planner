@@ -21,6 +21,9 @@ export function checkPlan(plan: PlanResult, exp: Expectation): string[] {
   const flags = plan.flags.map((x) => x.code);
   if (exp.flagsIncludeAny && !exp.flagsIncludeAny.some((c) => flags.includes(c))) f.push(`flags [${flags.join(", ")}] miss [${exp.flagsIncludeAny.join(", ")}]`);
   if (exp.minQuestions && plan.brief.clarifyingQuestions.length < exp.minQuestions) f.push("no clarifying questions");
+  // The brief asks for 3–5 ad variants whenever there is something to advertise.
+  const advertisable = plan.brief.status !== "no_fit" && plan.brief.categories.length > 0;
+  if (advertisable && (plan.creatives.length < 3 || plan.creatives.length > 5)) f.push(`${plan.creatives.length} ads, expected 3–5`);
   return f;
 }
 

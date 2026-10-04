@@ -1,11 +1,11 @@
 import { PERSONAS, type Persona } from "../catalog";
 import { BROAD_CATEGORIES } from "../taxonomy";
-import type { Brief, PersonaMatch, Reason } from "../types";
+import type { Brief, PersonaMatch, PublisherMatch, Reason } from "../types";
 import { clamp, humanList, overlap, parseAgeRange, rangesOverlap } from "../util";
 
 export const PERSONA_SELECT_THRESHOLD = 40;
 export const PERSONA_STRETCH_THRESHOLD = 20;
-const MIN_PERSONAS = 3;
+export const MIN_PERSONAS = 3; // the brief asks for 3–5 ad variants
 const MAX_PERSONAS = 5;
 
 // Points for (advertiser price tier × persona price sensitivity). Missing = 0.
@@ -58,7 +58,7 @@ export function scorePersona(brief: Brief, persona: Persona): { score: number; r
 
 export function scorePersonas(brief: Brief): PersonaMatch[] {
   const scored: PersonaMatch[] = PERSONAS.map((persona) => ({
-    persona, ...scorePersona(brief, persona), selected: false, stretch: false,
+    persona, ...scorePersona(brief, persona), selected: false, stretch: false, fillReason: null,
   })).sort((a, b) => b.score - a.score);
 
   if (brief.status === "no_fit") return scored;
@@ -73,4 +73,49 @@ export function scorePersonas(brief: Brief): PersonaMatch[] {
     m.stretch = true;
   });
   return scored;
+}
+
+// A penalty this large means the pitch actively turns the persona off (anti-value, gender mismatch).
+const HARD_TURN_OFF = -20;
+
+const CLOSEST_PUBLISHERS = 3;
+
+/**
+ * Runs after publishers are scored. If fewer than MIN_PERSONAS were selected, adds the personas who
+ * shop where the ads will run: first the recommended publishers, then the closest near-misses, then
+ * the next-best persona scores. So there are always at least 3 ads. Fill-ins never feed back into
+ * publisher scoring. Skipped for out-of-scope or zero-signal briefs.
+ */
+export function fillPersonas(brief: Brief, personas: PersonaMatch[], publishers: PublisherMatch[]): PersonaMatch[] {
+  const result = personas.map((m) => ({ ...m }));
+  const missing = MIN_PERSONAS - result.filter((m) => m.selected).length;
+  if (missing <= 0 || brief.status === "no_fit" || brief.categories.length === 0) return result;
+
+  const included = publishers.filter((p) => p.included);
+  const nearMisses = publishers
+    .filter((p) => !p.included && p.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, CLOSEST_PUBLISHERS);
+  const shopsAmong = (m: PersonaMatch, pubs: PublisherMatch[]) =>
+    pubs.filter((p) => overlap(m.persona.profile.categories, p.publisher.profile.categories).length > 0);
+
+  const candidates = result
+    .filter((m) => !m.selected && !m.reasons.some((r) => r.points <= HARD_TURN_OFF))
+    .sort((a, b) =>
+      shopsAmong(b, included).length - shopsAmong(a, included).length ||
+      shopsAmong(b, nearMisses).length - shopsAmong(a, nearMisses).length ||
+      b.score - a.score)
+    .slice(0, missing);
+
+  for (const m of candidates) {
+    const atIncluded = shopsAmong(m, included).map((p) => p.publisher.name);
+    const atNear = shopsAmong(m, nearMisses).map((p) => p.publisher.name);
+    m.selected = true;
+    m.fillReason = atIncluded.length
+      ? `Added so there are 3 ads: secondary audience that shops at ${atIncluded.join(", ")}`
+      : atNear.length
+        ? `Added so there are 3 ads: secondary audience that shops at nearby options (${atNear.join(", ")})`
+        : "Added so there are 3 ads: closest remaining audience";
+  }
+  return result;
 }

@@ -3,7 +3,7 @@ import { buildCampaignConfig, DEFAULT_BUDGET_USD } from "./config";
 import type { LlmSteps } from "./llm/steps";
 import { applyReview, validateCreatives } from "./postprocess";
 import { computeFlags } from "./scoring/flags";
-import { scorePersonas } from "./scoring/personas";
+import { fillPersonas, scorePersonas } from "./scoring/personas";
 import { scorePublishers } from "./scoring/publishers";
 import type { PlanResult } from "./types";
 
@@ -24,8 +24,10 @@ export async function runPipeline(input: { description: string; budgetUsd?: numb
   const base = { input: { description: input.description, budgetUsd }, generatedAt: new Date().toISOString(), timingsMs };
 
   const brief = await time("understand", () => llm.understand(input.description));
-  const personas = scorePersonas(brief);
-  let publishers = scorePublishers(brief, personas);
+  const scoredPersonas = scorePersonas(brief);
+  let publishers = scorePublishers(brief, scoredPersonas);
+  // Top up to 3 personas (so 3 ads) only after publishers are decided, so fill-ins can't sway the ranking.
+  const personas = fillPersonas(brief, scoredPersonas, publishers);
 
   if (brief.status === "no_fit") {
     return { ...base, brief, personas, publishers, flags: computeFlags(brief, publishers), reviewNote: null, creatives: [], config: null, warnings: [] };

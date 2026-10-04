@@ -63,6 +63,7 @@ export async function creative({ brief, description, personas, publishers }: Cre
     messaging_preferences: m.persona.messaging_preferences,
     disinterested_in: m.persona.disinterested_in,
     whyMatched: m.reasons.filter((r) => r.points > 0).map((r) => r.label),
+    matchStrength: m.fillReason || m.stretch ? "secondary" : "primary",
   }));
   const pubRows = publishers.map((m) => ({ publisherId: m.publisher.id, name: m.publisher.name, notes: m.publisher.notes }));
   const { output } = await generateText({

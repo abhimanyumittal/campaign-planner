@@ -19,11 +19,15 @@ export default function PersonaSection({ plan }: { plan: PlanResult }) {
                 <div className="flex items-baseline justify-between gap-2">
                   <h3 className="font-display text-lg font-semibold">{m.persona.name}</h3>
                   <span className="font-mono text-xs text-muted">
-                    {m.score}/100{m.stretch && <span className="ml-1 rounded bg-warn-soft px-1 text-warn">weak match</span>}
+                    {m.score}/100
+                    {m.fillReason ? (
+                      <span className="ml-1 rounded bg-warn-soft px-1 text-warn">secondary</span>
+                    ) : m.stretch && <span className="ml-1 rounded bg-warn-soft px-1 text-warn">weak match</span>}
                   </span>
                 </div>
                 <p className="text-xs text-muted">{m.persona.age_range} · {m.persona.gender_skew} · price sensitivity {m.persona.price_sensitivity}</p>
               </header>
+              {m.fillReason && <p className="text-xs text-warn">{m.fillReason}</p>}
               {ad && <p className="text-sm">{ad.whyThisPersona}</p>}
               <ReasonChips reasons={m.reasons} />
               {ad ? (

@@ -31,3 +31,8 @@ export const ACTIVEWEAR = makeBrief({
   categories: ["activewear", "womens_apparel"], values: ["sustainability"],
   priceTier: "premium", estPriceUsd: 90, targetGender: "female", purchaseModel: "one_time",
 });
+export const NA_DRINK = makeBrief({
+  categories: ["functional_beverages"], values: ["health_conscious"],
+  priceTier: "mid", estPriceUsd: 40, purchaseModel: "one_time",
+});
+export const FOR_MOMS = makeBrief({ status: "vague", categories: ["kids_family"], confidence: 0.2 });
